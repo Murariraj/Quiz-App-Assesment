@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        button {
+            float: right;
+        }
+
+        .hello {
+            float: left;
+        }
+
+        table {
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="display()">Create a Quiz</button>
+
+    <script>
+        function display() {
+            alert("Welcome To The ADMIN");
+
+            // Create input for number of questions
+            const title = document.createElement("h1");
+            title.textContent = "How many questions do you want to prepare?";
+            document.body.appendChild(title);
+
+            const questionInput = document.createElement("input");
+            questionInput.type = "number";
+            questionInput.id = "QuestionCount";
+            questionInput.placeholder = "Enter number of questions";
+            document.body.appendChild(questionInput);
+
+            const submitButton = document.createElement("button");
+            submitButton.classList.add("hello");
+            submitButton.textContent = "Submit";
+            submitButton.onclick = createTable;
+            document.body.appendChild(submitButton);
+
+            function createTable() {
+                const questionCount = parseInt(document.getElementById("QuestionCount").value);
+
+                if (!questionCount || questionCount <= 0) {
+                    alert("Please enter a valid number of questions");
+                    return;
+                }
+
+                const existingTable = document.querySelector("table");
+                if (existingTable) {
+                    existingTable.remove();
+                }
+
+                const table = document.createElement("table");
+                table.border = 1;
+
+                // Create table header
+                const headerRow = table.insertRow();
+                ["S.no", "Question", "Options"].forEach(headerText => {
+                    const th = document.createElement("th");
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+
+                // Add rows for each question
+                for (let i = 1; i <= questionCount; i++) {
+                    const row = table.insertRow();
+
+                    // Serial Number
+                    const cell1 = row.insertCell();
+                    cell1.textContent = i;
+
+                    // Question Input
+                    const cell2 = row.insertCell();
+                    const questionField = document.createElement("input");
+                    questionField.type = "text";
+                    questionField.id = `question-${i}`;
+                    questionField.placeholder = `Enter question ${i}`;
+                    cell2.appendChild(questionField);
+
+                    // Options
+                    const cell3 = row.insertCell();
+                    for (let j = 1; j <= 3; j++) {
+                        const radio = document.createElement("input");
+                        radio.type = "radio";
+                        radio.name = `options-${i}`;
+
+                        const optionField = document.createElement("input");
+                        optionField.type = "text";
+                        optionField.id = `option${j}-${i}`;
+                        optionField.placeholder = `Option ${j}`;
+                        optionField.style.marginLeft = "5px";
+
+                        cell3.appendChild(radio);
+                        cell3.appendChild(optionField);
+                        cell3.appendChild(document.createElement("br"));
+                    }
+                }
+
+                // Save Quiz Button
+                const saveRow = table.insertRow();
+                const saveCell = saveRow.insertCell();
+                saveCell.colSpan = 3;
+                saveCell.style.textAlign = "center";
+
+                const saveButton = document.createElement("button");
+                saveButton.textContent = "Save Quiz";
+                saveButton.onclick = saveQuiz;
+                saveCell.appendChild(saveButton);
+
+                document.body.appendChild(table);
+            }
+
+            function saveQuiz() {
+                const quizData = [];
+                const questionCount = parseInt(document.getElementById("QuestionCount").value);
+
+                for (let i = 1; i <= questionCount; i++) {
+                    const question = document.getElementById(`question-${i}`).value.trim();
+                    const options = [];
+
+                    for (let j = 1; j <= 3; j++) {
+                        const option = document.getElementById(`option${j}-${i}`).value.trim();
+                        if (option) {
+                            options.push(option);
+                        }
+                    }
+
+                    if (question && options.length === 3) {
+                        quizData.push({ question, options });
+                    } else {
+                        alert(`Please complete all fields for question ${i}`);
+                        return;
+                    }
+                }
+
+                localStorage.setItem("quizData", JSON.stringify(quizData));
+                alert("Quiz saved successfully!");
+            }
+        }
+    </script>
+</body>
+
+</html>

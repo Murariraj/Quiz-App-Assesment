@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Quiz</title>
+</head>
+
+<body>
+    <h1>Quiz</h1>
+    <form id="quizForm"></form>
+    <button onclick="submitQuiz()">Submit</button>
+
+    <script>
+        // Load quiz data from localStorage
+        const quizData = JSON.parse(localStorage.getItem("quizData"));
+
+        if (quizData) {
+            const form = document.getElementById("quizForm");
+
+            quizData.forEach((item, index) => {
+                const div = document.createElement("div");
+                div.innerHTML = `
+                    <p>${index + 1}. ${item.question}</p>
+                    ${item.options
+                        .map(
+                            (option, optIndex) =>
+                                `<label><input type="radio" name="question${index}" value="${option}"> ${option}</label><br>`
+                        )
+                        .join("")}
+                `;
+                form.appendChild(div);
+            });
+        } else {
+            document.body.innerHTML = "<p>No quiz available!</p>";
+        }
+
+        function submitQuiz() {
+            const formData = new FormData(document.getElementById("quizForm"));
+            const answers = {};
+
+            quizData.forEach((_, index) => {
+                answers[`question${index + 1}`] = formData.get(`question${index}`);
+            });
+
+            console.log("User Answers:", answers);
+            alert("Quiz submitted successfully!");
+        }
+    </script>
+</body>
+
+</html>
